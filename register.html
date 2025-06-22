@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Platform - Sign In / Sign Up</title>
+</head>
+<body style="background-color: #000000; font-family: Arial, sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0;">
+    <div style="width: 100%; max-width: 400px; padding: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="font-size: 36px; font-weight: bold; color: #facc15;">Gaming Platform</h1>
+            <p style="color: #d1d5db; margin-top: 8px;">Join the ultimate gaming experience!</p>
+        </div>
+
+        <div style="background-color: #1f2937; padding: 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(250, 204, 21, 0.2); border: 1px solid rgba(250, 204, 21, 0.3);">
+            <div style="display: flex; justify-content: center; margin-bottom: 24px;">
+                <button id="signInToggle" style="padding: 8px 16px; color: #facc15; font-weight: 600; border-bottom: 2px solid #facc15; background: none; border: none; cursor: pointer;">Sign In</button>
+                <button id="signUpToggle" style="padding: 8px 16px; color: #d1d5db; font-weight: 600; background: none; border: none; cursor: pointer;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='#d1d5db'">Sign Up</button>
+            </div>
+
+            <div id="signInForm" style="display: block;">
+                <h2 style="font-size: 24px; font-weight: bold; color: #facc15; text-align: center; margin-bottom: 16px;">Sign In</h2>
+                <div style="margin-bottom: 16px;">
+                    <label for="signInEmail" style="display: block; font-size: 14px; font-weight: 500; color: #d1d5db;">Email</label>
+                    <input id="signInEmail" type="email" placeholder="Enter your email" style="width: 100%; padding: 8px; background-color: #111827; color: #ffffff; border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 4px; margin-top: 4px; outline: none;" onfocus="this.style.borderColor='#facc15'; this.style.boxShadow='0 0 0 2px rgba(250, 204, 21, 0.5)'" onblur="this.style.borderColor='rgba(250, 204, 21, 0.5)'; this.style.boxShadow='none'">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label for="signInPassword" style="display: block; font-size: 14px; font-weight: 500; color: #d1d5db;">Password</label>
+                    <input id="signInPassword" type="password" placeholder="Enter your password" style="width: 100%; padding: 8px; background-color: #111827; color: #ffffff; border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 4px; margin-top: 4px; outline: none;" onfocus="this.style.borderColor='#facc15'; this.style.boxShadow='0 0 0 2px rgba(250, 204, 21, 0.5)'" onblur="this.style.borderColor='rgba(250, 204, 21, 0.5)'; this.style.boxShadow='none'">
+                </div>
+                <button id="signInButton" style="width: 100%; background-color: #facc15; color: #000000; padding: 8px; border-radius: 4px; font-weight: 600; border: none; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#eab308'" onmouseout="this.style.backgroundColor='#facc15'">Sign In</button>
+                <p id="signInStatus" style="text-align: center; font-size: 14px; color: #d1d5db; margin-top: 8px;"></p>
+            </div>
+
+            <div id="signUpForm" style="display: none;">
+                <h2 style="font-size: 24px; font-weight: bold; color: #facc15; text-align: center; margin-bottom: 16px;">Sign Up</h2>
+                <div style="margin-bottom: 16px;">
+                    <label for="signUpEmail" style="display: block; font-size: 14px; font-weight: 500; color: #d1d5db;">Email</label>
+                    <input id="signUpEmail" type="email" placeholder="Enter your email" style="width: 100%; padding: 8px; background-color: #111827; color: #ffffff; border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 4px; margin-top: 4px; outline: none;" onfocus="this.style.borderColor='#facc15'; this.style.boxShadow='0 0 0 2px rgba(250, 204, 21, 0.5)'" onblur="this.style.borderColor='rgba(250, 204, 21, 0.5)'; this.style.boxShadow='none'">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label for="signUpUsername" style="display: block; font-size: 14px; font-weight: 500; color: #d1d5db;">Username</label>
+                    <input id="signUpUsername" type="text" placeholder="Choose a username" style="width: 100%; padding: 8px; background-color: #111827; color: #ffffff; border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 4px; margin-top: 4px; outline: none;" onfocus="this.style.borderColor='#facc15'; this.style.boxShadow='0 0 0 2px rgba(250, 204, 21, 0.5)'" onblur="this.style.borderColor='rgba(250, 204, 21, 0.5)'; this.style.boxShadow='none'">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label for="signUpPassword" style="display: block; font-size: 14px; font-weight: 500; color: #d1d5db;">Password</label>
+                    <input id="signUpPassword" type="password" placeholder="Create a password" style="width: 100%; padding: 8px; background-color: #111827; color: #ffffff; border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 4px; margin-top: 4px; outline: none;" onfocus="this.style.borderColor='#facc15'; this.style.boxShadow='0 0 0 2px rgba(250, 204, 21, 0.5)'" onblur="this.style.borderColor='rgba(250, 204, 21, 0.5)'; this.style.boxShadow='none'">
+                </div>
+                <button id="signUpButton" style="width: 100%; background-color: #facc15; color: #000000; padding: 8px; border-radius: 4px; font-weight: 600; border: none; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#eab308'" onmouseout="this.style.backgroundColor='#facc15'">Sign Up</button>
+                <p id="signUpStatus" style="text-align: center; font-size: 14px; color: #d1d5db; margin-top: 8px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const signInToggle = document.getElementById('signInToggle');
+        const signUpToggle = document.getElementById('signUpToggle');
+        const signInForm = document.getElementById('signInForm');
+        const signUpForm = document.getElementById('signUpForm');
+        const signInButton = document.getElementById('signInButton');
+        const signUpButton = document.getElementById('signUpButton');
+        const signInStatus = document.getElementById('signInStatus');
+        const signUpStatus = document.getElementById('signUpStatus');
+
+        // Input fields for Sign In
+        const signInEmailInput = document.getElementById('signInEmail');
+        const signInPasswordInput = document.getElementById('signInPassword');
+
+        // Input fields for Sign Up
+        const signUpEmailInput = document.getElementById('signUpEmail');
+        const signUpUsernameInput = document.getElementById('signUpUsername');
+        const signUpPasswordInput = document.getElementById('signUpPassword');
+
+        // IMPORTANT: Update this URL to match your XAMPP setup
+        // If your register.html is at http://localhost/CASINO-main/register.html
+        // And your PHP scripts are in the same directory, then the paths are direct.
+        const BASE_API_URL = 'http://localhost/CASINO-main'; // No '/api' needed now
+
+        // Helper function to update status messages
+        function updateStatus(element, message, isError = false) {
+            element.textContent = message;
+            element.style.color = isError ? '#ef4444' : '#4ade80'; // Red for error, Green for success
+            if (!isError) {
+                // Clear success message after 3 seconds, but only if not redirecting immediately
+                // For sign-in, redirect handles the "clearing"
+                if (element === signUpStatus) {
+                    setTimeout(() => { element.textContent = ''; }, 3000);
+                }
+            }
+        }
+
+        // Toggle Forms
+        signInToggle.addEventListener('click', () => {
+            signInForm.style.display = 'block';
+            signUpForm.style.display = 'none';
+            signInToggle.style.borderBottom = '2px solid #facc15';
+            signInToggle.style.color = '#facc15';
+            signUpToggle.style.borderBottom = 'none';
+            signUpToggle.style.color = '#d1d5db';
+            signInStatus.textContent = '';
+            signUpStatus.textContent = '';
+        });
+
+        signUpToggle.addEventListener('click', () => {
+            signUpForm.style.display = 'block';
+            signInForm.style.display = 'none';
+            signUpToggle.style.borderBottom = '2px solid #facc15';
+            signUpToggle.style.color = '#facc15';
+            signInToggle.style.borderBottom = 'none';
+            signInToggle.style.color = '#d1d5db';
+            signInStatus.textContent = '';
+            signUpStatus.textContent = '';
+        });
+
+        // --- Sign In Logic with Backend Call ---
+        signInButton.addEventListener('click', async () => {
+            const email = signInEmailInput.value.trim();
+            const password = signInPasswordInput.value.trim();
+
+            if (!email || !password) {
+                updateStatus(signInStatus, 'Please enter both email and password.', true);
+                return;
+            }
+
+            updateStatus(signInStatus, 'Signing in...');
+
+            try {
+                const response = await fetch(`${BASE_API_URL}/signin.php`, { // Direct path to signin.php
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) { // Status code 200-299
+                    updateStatus(signInStatus, data.message);
+                    // Redirect after a short delay to show the success message
+                    setTimeout(() => {
+                        // The backend sends 'redirectTo', which is great for flexibility
+                        window.location.href = data.redirectTo || 'index.html'; // index.html is in the same directory
+                    }, 1000);
+                } else {
+                    // Handle server-side errors (e.g., 401 Unauthorized, 400 Bad Request)
+                    updateStatus(signInStatus, data.message || 'Sign-in failed. Please try again.', true);
+                }
+            } catch (error) {
+                console.error('Network error during sign-in:', error);
+                updateStatus(signInStatus, 'Network error or server unavailable. Check XAMPP server.', true);
+            }
+        });
+
+        // --- Sign Up Logic with Backend Call ---
+        signUpButton.addEventListener('click', async () => {
+            const email = signUpEmailInput.value.trim();
+            const username = signUpUsernameInput.value.trim();
+            const password = signUpPasswordInput.value.trim();
+
+            if (!email || !username || !password) {
+                updateStatus(signUpStatus, 'Please fill in all fields.', true);
+                return;
+            }
+
+            updateStatus(signUpStatus, 'Signing up...');
+
+            try {
+                const response = await fetch(`${BASE_API_URL}/signup.php`, { // Direct path to signup.php
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) { // Status code 200-299
+                    updateStatus(signUpStatus, data.message);
+                    // Optionally switch to sign-in form after successful sign-up
+                    setTimeout(() => {
+                        signInToggle.click(); // Programmatically click sign-in toggle
+                        signInEmailInput.value = email; // Pre-fill email for convenience
+                    }, 1500);
+                } else {
+                    // Handle server-side errors (e.g., 409 Conflict for existing user)
+                    updateStatus(signUpStatus, data.message || 'Sign-up failed. Please try again.', true);
+                }
+            } catch (error) {
+                console.error('Network error during sign-up:', error);
+                updateStatus(signUpStatus, 'Network error or server unavailable. Check XAMPP server.', true);
+            }
+        });
+    </script>
+</body>
+</html>

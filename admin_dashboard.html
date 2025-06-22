@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Platform - Admin Dashboard</title>
+</head>
+<body style="background-color: #000000; font-family: Arial, sans-serif; margin: 0;">
+    <div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 16px;">
+        <!-- Navigation -->
+        <nav style="display: flex; justify-content: space-between; align-items: center; background-color: #1f2937; padding: 16px; border-radius: 8px; color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3);">
+            <h1 style="font-size: 24px; font-weight: bold;">Gaming Platform - Admin</h1>
+            <div>
+                <button id="logoutBtn" style="color: #facc15; background: none; border: none; cursor: pointer;" onmouseover="this.style.color='#eab308'" onmouseout="this.style.color='#facc15'">Logout</button>
+            </div>
+        </nav>
+
+        <!-- Admin Dashboard -->
+        <div style="margin-top: 16px;">
+            <h2 style="font-size: 30px; font-weight: bold; color: #facc15; margin-bottom: 16px;">Admin Dashboard</h2>
+            <div style="background-color: #1f2937; padding: 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(250, 204, 21, 0.2); border: 1px solid rgba(250, 204, 21, 0.3); margin-bottom: 16px;">
+                <h3 style="font-size: 18px; font-weight: 600; color: #facc15; margin-bottom: 8px;">Admin Wallet</h3>
+                <p style="color: #d1d5db;"><strong>Balance:</strong> <span id="adminBalance">0.0 ASJJ</span></p>
+            </div>
+            <div style="background-color: #1f2937; padding: 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(250, 204, 21, 0.2); border: 1px solid rgba(250, 204, 21, 0.3); margin-bottom: 16px;">
+                <h3 style="font-size: 18px; font-weight: 600; color: #facc15; margin-bottom: 8px;">Transfer Tokens</h3>
+                <input id="transferUsername" type="text" placeholder="Enter username" style="width: 100%; padding: 8px; background-color: #111827; color: #ffffff; border: 1px solid rgba(250, 204, 21, 0.5); border-radius: 4px; margin-top: 4px; outline: none;" onfocus="this.style.borderColor='#facc15'; this.style.boxShadow='0 0 0 2px rgba(250, 204, 21, 0.5)'" onblur="this.style.borderColor='rgba(250, 204, 21, 0.5)'; this.style.boxShadow='none'">
+                <input id="transferAmount" type="number" step="0.01" placeholder="Enter amount (ASJJ)" style="width: 100%; padding: 8px; background-color: #111827; color: #ffffff; border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 4px; margin-top: 8px; outline: none;" onfocus="this.style.borderColor='#facc15'; this.style.boxShadow='0 0 0 2px rgba(250, 204, 21, 0.5)'" onblur="this.style.borderColor='rgba(250, 204, 21, 0.5)'; this.style.boxShadow='none'">
+                <button id="transferButton" style="width: 100%; background-color: #facc15; color: #000000; padding: 8px; border-radius: 4px; font-weight: 600; border: none; cursor: pointer; margin-top: 8px; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#eab308'" onmouseout="this.style.backgroundColor='#facc15'">Transfer Tokens</button>
+                <p id="transferStatus" style="margin-top: 8px; color: #d1d5db;"></p>
+            </div>
+            <div style="background-color: #1f2937; padding: 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(250, 204, 21, 0.2); border: 1px solid rgba(250, 204, 21, 0.3); margin-bottom: 16px;">
+                <h3 style="font-size: 18px; font-weight: 600; color: #facc15; margin-bottom: 8px;">Pending Token Requests</h3>
+                <div id="requestList" style="margin-bottom: 16px; color: #d1d5db;"></div>
+            </div>
+            <div style="background-color: #1f2937; padding: 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(250, 204, 21, 0.2); border: 1px solid rgba(250, 204, 21, 0.3); margin-bottom: 16px;">
+                <h3 style="font-size: 18px; font-weight: 600; color: #facc15; margin-bottom: 8px;">Pending Cash Out Requests</h3>
+                <div id="cashOutList" style="margin-bottom: 16px; color: #d1d5db;"></div>
+            </div>
+            <div style="background-color: #1f2937; padding: 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(250, 204, 21, 0.2); border: 1px solid rgba(250, 204, 21, 0.3); margin-bottom: 16px;">
+                <h3 style="font-size: 18px; font-weight: 600; color: #facc15; margin-bottom: 8px;">User Management</h3>
+                <div id="userList" style="margin-bottom: 16px; color: #d1d5db;"></div>
+            </div>
+            <div style="background-color: #1f2937; padding: 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(250, 204, 21, 0.2); border: 1px solid rgba(250, 204, 21, 0.3);">
+                <h3 style="font-size: 18px; font-weight: 600; color: #facc15; margin-bottom: 8px;">Transaction History</h3>
+                <div id="transactionHistory" style="margin-bottom: 16px; color: #d1d5db;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get user from localStorage
+        const user = JSON.parse(localStorage.getItem('user')) || { username: 'Guest', email: '', balance: 0.0, role: 'user' };
+
+        // Restrict access to admins //
+        if (user.role !== 'admin') {
+            alert('Access denied: Admins only.');
+            window.location.href = 'dashboard.html';
+        } 
+
+        // DOM elements
+        const adminBalanceEl = document.getElementById('adminBalance');
+        const transferStatusEl = document.getElementById('transferStatus');
+        const requestListEl = document.getElementById('requestList');
+        const cashOutListEl = document.getElementById('cashOutList');
+        const userListEl = document.getElementById('userList');
+        const transactionHistoryEl = document.getElementById('transactionHistory');
+
+        // Initialize UI
+        fetchAdminBalance();
+        updateRequestList();
+        updateCashOutList();
+        updateUserList();
+        updateTransactionHistory();
+
+        // Update admin balance
+        async function fetchAdminBalance() {
+            try {
+                const response = await fetch(`api.php?action=get_user&email=${user.email}`);
+                const data = await response.json();
+                if (data.balance) {
+                    adminBalanceEl.textContent = `${parseFloat(data.balance).toFixed(2)} ASJJ`;
+                }
+            } catch (error) {
+                console.error('Error fetching admin balance:', error);
+            }
+        }
+
+        // Handle admin transfer
+        document.getElementById('transferButton').addEventListener('click', async () => {
+            const username = document.getElementById('transferUsername').value.trim();
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            if (!username || !amount || amount <= 0) {
+                transferStatusEl.textContent = 'Please enter a valid username and amount.';
+                transferStatusEl.style.color = '#ef4444';
+                return;
+            }
+            try {
+                const response = await fetch('api.php?action=transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, amount, admin_email: user.email })
+                });
+                const data = await response.json();
+                if (data.error) {
+                    transferStatusEl.textContent = data.error;
+                    transferStatusEl.style.color = '#ef4444';
+                } else {
+                    transferStatusEl.textContent = `Transferred ${amount} ASJJ to ${username}.`;
+                    transferStatusEl.style.color = '#22c55e';
+                    fetchAdminBalance();
+                    updateUserList();
+                }
+            } catch (error) {
+                transferStatusEl.textContent = `Transfer failed: ${error.message}`;
+                transferStatusEl.style.color = '#ef4444';
+            }
+        });
+
+        // Update token request list
+        async function updateRequestList() {
+            try {
+                const response = await fetch(`api.php?action=get_requests&email=${user.email}`);
+                const data = await response.json();
+                if (data.error) {
+                    requestListEl.textContent = data.error;
+                    return;
+                }
+                requestListEl.innerHTML = '';
+                data.tokenRequests.forEach((req) => {
+                    const div = document.createElement('div');
+                    div.style.display = 'flex';
+                    div.style.justifyContent = 'space-between';
+                    div.style.alignItems = 'center';
+                    div.style.padding = '8px';
+                    div.style.borderBottom = '1px solid rgba(250, 204, 21, 0.3)';
+                    div.innerHTML = `
+                        <p>User: ${req.username} | Amount: ${req.amount} ASJJ | Status: ${req.status}</p>
+                        ${req.status === 'pending' ? `
+                            <div>
+                                <button class="approveTokenBtn" data-id="${req.id}" style="background-color: #facc15; color: #000000; padding: 4px 8px; border-radius: 4px; margin-right: 8px; font-weight: 600; border: none; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#eab308'" onmouseout="this.style.backgroundColor='#facc15'">Approve</button>
+                                <button class="rejectTokenBtn" data-id="${req.id}" style="background-color: #ef4444; color: #ffffff; padding: 4px 8px; border-radius: 4px; font-weight: 600; border: none; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#dc2626'" onmouseout="this.style.backgroundColor='#ef4444'">Reject</button>
+                            </div>
+                        ` : ''}
+                    `;
+                    requestListEl.appendChild(div);
+                });
+
+                document.querySelectorAll('.approveTokenBtn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        try {
+                            const response = await fetch('api.php?action=token_request_action', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id, admin_email: user.email, action: 'approve' })
+                            });
+                            const data = await response.json();
+                            if (data.error) {
+                                alert(data.error);
+                            } else {
+                                fetchAdminBalance();
+                                updateRequestList();
+                                updateUserList();
+                                updateTransactionHistory();
+                            }
+                        } catch (error) {
+                            alert(`Action failed: ${error.message}`);
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.rejectTokenBtn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        try {
+                            const response = await fetch('api.php?action=token_request_action', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id, admin_email: user.email, action: 'reject' })
+                            });
+                            const data = await response.json();
+                            if (data.error) {
+                                alert(data.error);
+                            } else {
+                                updateRequestList();
+                                updateTransactionHistory();
+                            }
+                        } catch (error) {
+                            alert(`Action failed: ${error.message}`);
+                        }
+                    });
+                });
+            } catch (error) {
+                requestListEl.textContent = `Error loading requests: ${error.message}`;
+            }
+        }
+
+        // Update cash out request list
+        async function updateCashOutList() {
+            try {
+                const response = await fetch(`api.php?action=get_requests&email=${user.email}`);
+                const data = await response.json();
+                if (data.error) {
+                    cashOutListEl.textContent = data.error;
+                    return;
+                }
+                cashOutListEl.innerHTML = '';
+                data.cashOutRequests.forEach((req) => {
+                    const div = document.createElement('div');
+                    div.style.display = 'flex';
+                    div.style.justifyContent = 'space-between';
+                    div.style.alignItems = 'center';
+                    div.style.padding = '8px';
+                    div.style.borderBottom = '1px solid rgba(250, 204, 21, 0.3)';
+                    div.innerHTML = `
+                        <p>User: ${req.username} | Amount: ${req.amount} ASJJ | Status: ${req.status}</p>
+                        ${req.status === 'pending' ? `
+                            <div>
+                                <button class="approveCashOutBtn" data-id="${req.id}" style="background-color: #facc15; color: #000000; padding: 4px 8px; border-radius: 4px; margin-right: 8px; font-weight: 600; border: none; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#eab308'" onmouseout="this.style.backgroundColor='#facc15'">Approve</button>
+                                <button class="rejectCashOutBtn" data-id="${req.id}" style="background-color: #ef4444; color: #ffffff; padding: 4px 8px; border-radius: 4px; font-weight: 600; border: none; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#dc2626'" onmouseout="this.style.backgroundColor='#ef4444'">Reject</button>
+                            </div>
+                        ` : ''}
+                    `;
+                    cashOutListEl.appendChild(div);
+                });
+
+                document.querySelectorAll('.approveCashOutBtn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        try {
+                            const response = await fetch('api.php?action=cash_out_request_action', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id, admin_email: user.email, action: 'approve' })
+                            });
+                            const data = await response.json();
+                            if (data.error) {
+                                alert(data.error);
+                            } else {
+                                updateCashOutList();
+                                updateUserList();
+                                updateTransactionHistory();
+                            }
+                        } catch (error) {
+                            alert(`Action failed: ${error.message}`);
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.rejectCashOutBtn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        try {
+                            const response = await fetch('api.php?action=cash_out_request_action', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id, admin_email: user.email, action: 'reject' })
+                            });
+                            const data = await response.json();
+                            if (data.error) {
+                                alert(data.error);
+                            } else {
+                                updateCashOutList();
+                                updateTransactionHistory();
+                            }
+                        } catch (error) {
+                            alert(`Action failed: ${error.message}`);
+                        }
+                    });
+                });
+            } catch (error) {
+                cashOutListEl.textContent = `Error loading requests: ${error.message}`;
+            }
+        }
+
+        // Update user list
+        async function updateUserList() {
+            try {
+                const response = await fetch(`api.php?action=get_users&admin_email=${user.email}`);
+                const data = await response.json();
+                if (data.error) {
+                    userListEl.textContent = data.error;
+                    return;
+                }
+                userListEl.innerHTML = '';
+                data.forEach((uUser) => {
+                    const div = document.createElement('div');
+                    div.style.display = 'flex';
+                    div.style.justifyContent = 'space-between';
+                    div.style.alignItems = 'center';
+                    div.style.padding = '8px';
+                    div.style.borderBottom = '1px solid rgba(250, 204, 21, 0.3)';
+                    div.innerHTML = `
+                        <p>Email: ${uUser.email} | Username: ${uUser.username} | Balance: ${uUser.balance.toFixed(2)} ASJJ | Role: ${uUser.role}</p>
+                        <button class="editUserBtn" data-email="${uUser.email}" style="background-color: #facc15; color: #000000; padding: 4px 8px; border-radius: 4px; font-weight: 600; border: none; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#eab308'" onmouseout="this.style.backgroundColor='#facc15'">Edit</button>
+                    `;
+                    userListEl.appendChild(div);
+                });
+
+                document.querySelectorAll('.editUserBtn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const email = btn.dataset.email;
+                        const newBalance = prompt('Enter new balance (ASJJ):');
+                        const newRole = prompt('Enter new role (user/admin):', 'user');
+                        if (newBalance !== null && newRole !== null && !isNaN(newBalance) && ['user', 'admin'].includes(newRole)) {
+                            updateUser(email, parseFloat(newBalance), newRole);
+                        }
+                    });
+                });
+            } catch (error) {
+                userListEl.textContent = `Error loading users: ${error.message}`;
+            }
+        }
+
+        async function updateUser(email, balance, role) {
+            try {
+                const response = await fetch('api.php?action=update_user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, balance, role, admin_email: user.email })
+                });
+                const data = await response.json();
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert('User updated successfully.');
+                    updateUserList();
+                    fetchAdminBalance();
+                }
+            } catch (error) {
+                alert(`Update failed: ${error.message}`);
+            }
+        }
+
+        // Update transaction history
+        async function updateTransactionHistory() {
+            try {
+                const response = await fetch(`api.php?action=get_transaction_history&admin_email=${user.email}`);
+                const data = await response.json();
+                if (data.error) {
+                    transactionHistoryEl.textContent = data.error;
+                    return;
+                }
+                transactionHistoryEl.innerHTML = '';
+                data.forEach((tx) => {
+                    const div = document.createElement('div');
+                    div.style.padding = '8px';
+                    div.style.borderBottom = '1px solid rgba(250, 204, 21, 0.3)';
+                    div.innerHTML = `
+                        <p>Type: ${tx.request_type} | User: ${tx.email} | Amount: ${tx.amount} ASJJ | Status: ${tx.status} | Admin: ${tx.admin_email} | Time: ${tx.timestamp}</p>
+                    `;
+                    transactionHistoryEl.appendChild(div);
+                });
+            } catch (error) {
+                transactionHistoryEl.textContent = `Error loading transaction history: ${error.message}`;
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('user');
+            window.location.href = 'register.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tile Matching Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tile Matching Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+      <!-- start of header section -->
+    <header class="header">   
+    
+        <section class="flex">
+
+            <a href="" class="logo"><i class="fa fa-coins "></i>ASJJ Grand Casino</a>
+
+            <nav class="navbar">
+                <a href="#home">home</a>
+                <a href="#about">about</a>
+                <a href="#game">game</a>
+                <a href="#faq">faq</a>                
+                <a href="#contact">contact</a>
+            </nav> 
+
+        <a href="dashboard.html" class="btn">USER +</a>
+        <a href="register.html" class="btn">Sign up/Log in</a>
+
+     </section>
+
+   </header>
+
+<div id="menu-btn" class="fa fa-bars-straggered"></div>
+
+
+<div id="menu-btn" class="fa fa-bars-straggered"></div>
+
+    <h1>Plinko Betting Game</h1>
+
+    <p>Balance: $<span id="balance">100.00</span></p>
+    <p>Total win: $<span id="cashOutPool">0.00</span></p>
+
+    <div class="controls">
+      <input type="number" id="bet" placeholder="Enter Bet Amount" min="1" />
+      <button onclick="dropBall()">Drop Ball</button>
+      <!--
+      <button onclick="cashIn()">Cash In</button>
+      <button onclick="cashOut()">Cash Out</button>
+    -->
+    </div>
+
+    <div class="plinko-board" id="plinkoBoard">
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="cashoutModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Piliin ang iyong Cash Out Method</h2>
+      <button onclick="selectCashOut('GCash')">GCash</button>
+      <button onclick="selectCashOut('PayMaya')">PayMaya</button>
+      <button onclick="selectCashOut('Bank Account')">Bank Account</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+
+

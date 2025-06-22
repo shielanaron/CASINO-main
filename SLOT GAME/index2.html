@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Slot Machine</title>
+  <style>
+    body {
+      background: #171717;
+      color: #f5f6f1;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .slot-machine {
+      background: #424136;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(249, 233, 5, 0.4);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .reels {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .reel {
+      background: #080807;
+      border-radius: 10px;
+      padding: 1rem;
+      font-size: 2rem;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 10px rgb(248, 248, 6) inset;
+    }
+
+    .controls {
+      margin-bottom: 1rem;
+    }
+
+    .buttons-bottom {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    input[type="number"] {
+      padding: 0.4rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: none;
+      margin-right: 0.5rem;
+      width: 100px;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      background-color: rgb(249, 249, 242);
+      color: #060606;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: rgb(250, 242, 7);
+    }
+
+    .message, .balance, .multiplier, .totalWin {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .history {
+      margin-top: 1rem;
+    }
+
+    .history ul {
+      list-style: none;
+      padding-left: 0;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .paytable {
+      margin-top: 1rem;
+      text-align: left;
+      background: #333333;
+      padding: 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(229, 240, 27, 0.5);
+    }
+
+    .modal-content {
+      background: #333;
+      color: rgb(224, 231, 12);
+      margin: 15% auto;
+      padding: 20px;
+      width: 80%;
+      max-width: 300px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="slot-machine">
+    <div class="reels">
+      <div class="reel" id="reel1">😎</div>
+      <div class="reel" id="reel2">😘</div>
+      <div class="reel" id="reel3">😵</div>
+    </div>
+
+    <div class="controls">
+      <input type="number" id="betAmount" placeholder="Enter bet" min="1"/>
+      <button onclick="spin()">Spin</button>
+    </div>
+
+    <div class="message" id="message"></div>
+    <div class="balance" id="balance">💰 Balance: $100</div>
+    <div class="totalWin" id="totalWin">🏆 Total Win: $0</div>
+    
+    <div class="multiplier" id="multiplierDisplay">🔥 Multiplier: x1</div>
+
+    <div class="buttons-bottom">
+      <!-- 
+        <button onclick="cashIn()">➕ Cash In</button>
+      <button onclick="cashOut()">💵 Cash Out</button> 
+    --> 
+
+      <button onclick="toggleHistory()">🧾 History</button>
+    </div>
+
+    <div class="history" id="historyPanel" style="display: none;">
+      <h4>🧾 Result History</h4>
+      <ul id="historyList"></ul>
+    </div>
+
+    <div class="paytable">
+      <h3>Paytable</h3>
+      <ul>
+        <li>😭😭😭 - x2 bet</li>
+        <li>🥺🥺🥺 - x3 bet</li>
+        <li>🥰🥰🥰 - x5 bet</li>
+        <li>😉😉😉 - x4 bet</li>
+        <li>😎😎😎 - x10 bet</li>
+        <li>😏😏😏 - x6 bet</li>
+        <li>Any two matching - x0.5 bet</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Modal
+  <div id="cashoutModal" class="modal">
+    <div class="modal-content">
+      <p>Select Cash Out Method:</p>
+      <button onclick="selectCashOut('GCash')">GCash</button>
+      <button onclick="selectCashOut('Bank')">Bank</button>
+      <button onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+--> 
+  <script>
+    const symbols = ['😭', '🥺', '🥰', '😉', '😎', '😏'];
+    const payouts = { '😭': 2, '🥺': 3, '🥰': 5, '😉': 4, '😎': 10, '😏': 6 };
+    let balance = 100;
+    let totalWin = 0;
+    let multiplier = 1;
+    const history = [];
+
+    function getRandomSymbol() {
+      return symbols[Math.floor(Math.random() * symbols.length)];
+    }
+
+    function updateUI() {
+      document.getElementById('balance').textContent = `💰 Balance: $${balance.toFixed(2)}`;
+      document.getElementById('totalWin').textContent = `🏆 Total Win: $${totalWin.toFixed(2)}`;
+      document.getElementById('multiplierDisplay').textContent = `🔥 Multiplier: x${multiplier}`;
+    }
+
+    function spin() {
+      const betInput = document.getElementById('betAmount');
+      const betAmount = parseFloat(betInput.value);
+      const message = document.getElementById('message');
+
+      if (isNaN(betAmount) || betAmount <= 0) {
+        message.textContent = '❗ Invalid bet.';
+        return;
+      }
+
+      if (betAmount > balance) {
+        message.textContent = '❗ Not enough balance.';
+        return;
+      }
+
+      balance -= betAmount;
+      updateUI();
+      message.textContent = '🎰 Spinning...';
+
+      let spinCount = 0;
+      const maxSpins = 10;
+      const interval = setInterval(() => {
+        document.getElementById('reel1').textContent = getRandomSymbol();
+        document.getElementById('reel2').textContent = getRandomSymbol();
+        document.getElementById('reel3').textContent = getRandomSymbol();
+        spinCount++;
+
+        if (spinCount >= maxSpins) {
+          clearInterval(interval);
+          showResult(betAmount);
+        }
+      }, 50);
+    }
+
+    function showResult(betAmount) {
+      const r1 = getRandomSymbol();
+      const r2 = getRandomSymbol();
+      const r3 = getRandomSymbol();
+
+      document.getElementById('reel1').textContent = r1;
+      document.getElementById('reel2').textContent = r2;
+      document.getElementById('reel3').textContent = r3;
+
+      let payout = 0;
+      const message = document.getElementById('message');
+
+      if (r1 === r2 && r2 === r3) {
+        payout = payouts[r1] * betAmount * multiplier;
+        message.textContent = `🎉 Triple Match! (${r1}) Won $${payout.toFixed(2)}`;
+        multiplier++;
+      } else if (r1 === r2 || r1 === r3 || r2 === r3) {
+        payout = 0.5 * betAmount * multiplier;
+        message.textContent = `✨ Double Match! Won $${payout.toFixed(2)}`;
+        multiplier++;
+      } else {
+        message.textContent = '😞 Try again!';
+        multiplier = 1;
+      }
+
+      totalWin += payout;
+      updateUI();
+      addToHistory(`${r1}${r2}${r3} → $${payout.toFixed(2)}`);
+    }
+
+    function cashIn() {
+      const amount = parseFloat(prompt("Enter cash in amount:"));
+      if (!isNaN(amount) && amount > 0) {
+        balance += amount;
+        updateUI();
+        alert(`You cashed in $${amount.toFixed(2)}.`);
+      }
+    }
+
+    function cashOut() {
+      if (totalWin <= 0) {
+        alert("No winnings to cash out.");
+        return;
+      }
+      document.getElementById('cashoutModal').classList.add('show');
+    }
+
+    function selectCashOut(method) {
+      alert(`Cashed out $${totalWin.toFixed(2)} via ${method}.`);
+      totalWin = 0;
+      updateUI();
+      closeModal();
+    }
+
+    function closeModal() {
+      document.getElementById('cashoutModal').classList.remove('show');
+    }
+
+    function addToHistory(entry) {
+      history.unshift(entry);
+      if (history.length > 10) history.pop();
+      const list = document.getElementById('historyList');
+      list.innerHTML = '';
+      history.forEach(h => {
+        const li = document.createElement('li');
+        li.textContent = h;
+        list.appendChild(li);
+      });
+    }
+
+    function toggleHistory() {
+      const panel = document.getElementById('historyPanel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    updateUI();
+  </script>
+</body>
+</html>

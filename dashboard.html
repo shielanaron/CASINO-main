@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Platform - User Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black font-sans">
+    <div class="container mx-auto p-4">
+        <!-- Navigation -->
+        <nav class="flex justify-between items-center bg-gray-800 p-4 rounded text-yellow-400 border border-yellow-400/30">
+            <h1 class="text-2xl font-bold">Gaming Platform</h1>
+            <div>
+                <button id="logoutBtn" class="hover:text-yellow-500">Logout</button>
+            </div>
+        </nav>
+
+        <!-- User Dashboard -->
+        <div class="mt-4">
+            <h2 class="text-3xl font-bold text-yellow-400 mb-4">User Dashboard</h2>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg shadow-yellow-400/20 border border-yellow-400/30 mb-4">
+                <h3 class="text-lg font-semibold text-yellow-400 mb-2">Your Account</h3>
+                <p class="text-gray-300"><strong>Username:</strong> <span id="userName"></span></p>
+                <p class="text-gray-300"><strong>Balance:</strong> <span id="userBalance">0.0 ASJJ</span></p>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg shadow-yellow-400/20 border border-yellow-400/30 mb-4">
+                <h3 class="text-lg font-semibold text-yellow-400 mb-2">Request Tokens</h3>
+                <input id="requestAmount" type="number" step="0.01" placeholder="Enter amount (ASJJ)" class="w-full p-2 bg-gray-900 text-white border border-yellow-400/50 rounded mt-1 focus:ring-2 focus:ring-yellow-400 focus:outline-none">
+                <button id="requestButton" class="w-full bg-yellow-400 text-black p-2 rounded hover:bg-yellow-500 transition font-semibold mt-2">Request Tokens</button>
+                <p id="requestStatus" class="mt-2 text-gray-300"></p>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg shadow-yellow-400/20 border border-yellow-400/30 mb-4">
+                <h3 class="text-lg font-semibold text-yellow-400 mb-2">Cash Out</h3>
+                <input id="cashOutAmount" type="number" step="0.01" placeholder="Enter amount to cash out (ASJJ)" class="w-full p-2 bg-gray-900 text-white border border-yellow-400/50 rounded mt-1 focus:ring-2 focus:ring-yellow-400 focus:outline-none">
+                <button id="cashOutButton" class="w-full bg-yellow-400 text-black p-2 rounded hover:bg-yellow-500 transition font-semibold mt-2">Request Cash Out</button>
+                <p id="cashOutStatus" class="mt-2 text-gray-300"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get user from localStorage
+        const user = JSON.parse(localStorage.getItem('user')) || { username: 'Guest', email: '', balance: 0.0, role: 'user' };
+
+        // Redirect admins to admin dashboard
+        if (user.role === 'admin') {
+            window.location.href = 'admin_dashboard.html';
+        }
+
+        // DOM elements
+        const userNameEl = document.getElementById('userName');
+        const userBalanceEl = document.getElementById('userBalance');
+        const requestStatusEl = document.getElementById('requestStatus');
+        const cashOutStatusEl = document.getElementById('cashOutStatus');
+
+        // Initialize UI
+        userNameEl.textContent = user.username;
+        userBalanceEl.textContent = `${parseFloat(user.balance).toFixed(2)} ASJJ`;
+
+        // Update user balance
+        async function updateUserBalance() {
+            try {
+                const response = await fetch(`api.php?action=get_user&email=${user.email}`);
+                const data = await response.json();
+                if (data.balance) {
+                    user.balance = data.balance;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    userBalanceEl.textContent = `${parseFloat(data.balance).toFixed(2)} ASJJ`;
+                }
+            } catch (error) {
+                console.error('Error updating user balance:', error);
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('user');
+            window.location.href = 'register.html';
+        });
+
+        // Handle token request
+        document.getElementById('requestButton').addEventListener('click', async () => {
+            const amount = parseFloat(document.getElementById('requestAmount').value);
+            if (!amount || amount <= 0) {
+                requestStatusEl.textContent = 'Please enter a valid amount.';
+                requestStatusEl.classList.add('text-red-500');
+                return;
+            }
+            try {
+                const response = await fetch('api.php?action=token_request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: user.email, amount })
+                });
+                const data = await response.json();
+                if (data.error) {
+                    requestStatusEl.textContent = data.error;
+                    requestStatusEl.classList.add('text-red-500');
+                } else {
+                    requestStatusEl.textContent = `Requested ${amount} ASJJ. Awaiting admin approval.`;
+                    requestStatusEl.classList.remove('text-red-500');
+                    requestStatusEl.classList.add('text-green-500');
+                }
+            } catch (error) {
+                requestStatusEl.textContent = `Request failed: ${error.message}`;
+                requestStatusEl.classList.add('text-red-500');
+            }
+        });
+
+        // Handle cash out request
+        document.getElementById('cashOutButton').addEventListener('click', async () => {
+            const amount = parseFloat(document.getElementById('cashOutAmount').value);
+            if (!amount || amount <= 0) {
+                cashOutStatusEl.textContent = 'Please enter a valid amount.';
+                cashOutStatusEl.classList.add('text-red-500');
+                return;
+            }
+            if (amount > user.balance) {
+                cashOutStatusEl.textContent = 'Insufficient balance!';
+                cashOutStatusEl.classList.add('text-red-500');
+                return;
+            }
+            try {
+                const response = await fetch('api.php?action=cash_out_request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: user.email, amount })
+                });
+                const data = await response.json();
+                if (data.error) {
+                    cashOutStatusEl.textContent = data.error;
+                    cashOutStatusEl.classList.add('text-red-500');
+                } else {
+                    cashOutStatusEl.textContent = `Cash out of ${amount} ASJJ requested. Awaiting admin approval.`;
+                    cashOutStatusEl.classList.remove('text-red-500');
+                    cashOutStatusEl.classList.add('text-green-500');
+                    updateUserBalance();
+                }
+            } catch (error) {
+                cashOutStatusEl.textContent = `Request failed: ${error.message}`;
+                cashOutStatusEl.classList.add('text-red-500');
+            }
+        });
+    </script>
+</body>
+</html>
